@@ -2,7 +2,7 @@
 
 ![image](https://github.com/jb5982857/albert/blob/master/image/architecture.jpg?raw=true)
 
-####app
+#### app
 app 壳，作为 app 入口，applicaiton 事件分发；
 
 #### 登录注册
