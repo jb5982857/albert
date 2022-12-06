@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 21
@@ -31,6 +31,9 @@ android {
     dataBinding {
         isEnabled = true
     }
+
+    //xml资源必须以 account_ 开头
+    resourcePrefix = "account_"
 }
 
 dependencies {

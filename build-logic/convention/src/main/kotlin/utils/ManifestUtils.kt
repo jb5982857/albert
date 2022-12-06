@@ -15,6 +15,7 @@ object ManifestUtils {
     private const val NAME = "name"
     private const val VALUE = "value"
     private const val MODULE_IS_MAIN = "module_is_main"
+    private const val BASE_APPLICATION_PATH = "com.albert.base_components.BaseApplication"
 
     private const val LAUNCH_NODE_TEXT =
         "<intent-filter " +
@@ -30,24 +31,33 @@ object ManifestUtils {
             val applicationNode =
                 (rootDoc.content()[0] as Element).content().find { it.name == APPLICATION }
                     ?: return false
-            val activityNodes =
-                (applicationNode as Element).content().filter { it.name == ACTIVITY }
-                    ?: return false
 
-            activityNodes.forEach { activityNode ->
-                val metaData = (activityNode as Element).content()?.filter { it.name == META_DATA }
-                metaData?.forEach {
-                    val attrs = (it as Element).attributes()
-                    val nameAttr = attrs.find { it.name == NAME && it.value == MODULE_IS_MAIN }
-                    if (nameAttr != null) {
-                        //找到了这个meta-data
-                        val valueAttr = attrs.find { it.name == VALUE } ?: return@forEach
-                        val value = valueAttr.value
-                        if (value == "true") {
-                            addLaunchNode(activityNode)
+            (applicationNode as Element).apply {
+                val applicationNameAttr = this.attribute(NAME)
+                if (applicationNameAttr == null) {
+                    this.addAttribute("android:$NAME", BASE_APPLICATION_PATH)
+                }
+
+                val activityNodes =
+                    this.content().filter { it.name == ACTIVITY }
+                        ?: return false
+
+                activityNodes.forEach { activityNode ->
+                    val metaData =
+                        (activityNode as Element).content()?.filter { it.name == META_DATA }
+                    metaData?.forEach {
+                        val attrs = (it as Element).attributes()
+                        val nameAttr = attrs.find { it.name == NAME && it.value == MODULE_IS_MAIN }
+                        if (nameAttr != null) {
+                            //找到了这个meta-data
+                            val valueAttr = attrs.find { it.name == VALUE } ?: return@forEach
+                            val value = valueAttr.value
+                            if (value == "true") {
+                                addLaunchNode(activityNode)
+                            }
                         }
-                    }
 
+                    }
                 }
             }
             update(rootDoc)
@@ -78,7 +88,7 @@ object ManifestUtils {
     }
 
 
-    fun addLaunchNode(activityNode: Element): Boolean {
+    private fun addLaunchNode(activityNode: Element): Boolean {
         val manifestNodeReader = SAXReader()
         try {
             val launchEle =

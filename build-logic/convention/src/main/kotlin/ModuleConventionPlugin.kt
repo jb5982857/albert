@@ -19,6 +19,8 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.tasks.ProcessApplicationManifest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 import utils.ManifestUtils
 
 class ModuleConventionPlugin : Plugin<Project> {
@@ -39,6 +41,7 @@ class ModuleConventionPlugin : Plugin<Project> {
             project.pluginManager.apply("com.android.library")
         }
         project.pluginManager.apply("org.jetbrains.kotlin.android")
+        project.pluginManager.apply("kotlin-kapt")
 
         val android = project.extensions.getByName("android")
         if (android is ApplicationExtension) {
@@ -48,11 +51,28 @@ class ModuleConventionPlugin : Plugin<Project> {
                 defaultConfig.versionName = "1.0.0"
             }
         }
+
+        setKapt(project)
+        setDependencies(project)
+    }
+
+    private fun setKapt(project: Project) {
+        project.extensions.configure<KaptExtension>("kapt") {
+            arguments {
+                arg("AROUTER_MODULE_NAME", project.name)
+            }
+        }
+    }
+
+    private fun setDependencies(project: Project) {
+        project.dependencies {
+            this.add("implementation", "com.alibaba:arouter-api:1.5.2")
+            this.add("kapt", "com.alibaba:arouter-compiler:1.5.2")
+        }
     }
 
     private fun getAllVariantManifestTask(
-        project: Project,
-        isModule: Boolean
+        project: Project, isModule: Boolean
     ) {
         if (isModule) {
             project.extensions.findByType(AppExtension::class.java)?.variantFilter {
@@ -68,13 +88,11 @@ class ModuleConventionPlugin : Plugin<Project> {
 
         project.afterEvaluate {
             variantNames.forEach {
-                val applicationManifestTask: ProcessApplicationManifest =
-                    project.tasks.getByName(
-                        String.format(
-                            "process%sMainManifest",
-                            it.capitalize()
-                        )
-                    ) as ProcessApplicationManifest
+                val applicationManifestTask: ProcessApplicationManifest = project.tasks.getByName(
+                    String.format(
+                        "process%sMainManifest", it.capitalize()
+                    )
+                ) as ProcessApplicationManifest
                 applicationManifestTask.doLast {
                     val task = this as ProcessApplicationManifest
                     val androidManifestPath = task.mergedManifest.get().toString()

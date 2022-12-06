@@ -8,7 +8,7 @@
         <activity
             android:name="com.albert.account.ui.AccountActivity"
             android:configChanges="orientation|keyboardHidden|navigation|screenSize|locale|keyboard|screenLayout|density|fontScale|layoutDirection|smallestScreenSize"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <meta-data
                 android:name="module_is_main"

@@ -28,3 +28,8 @@ include(":common")
 
 
 include(":account")
+include(":app-utils")
+include(":common-ui")
+include(":network")
+include(":data-store")
+include(":log")

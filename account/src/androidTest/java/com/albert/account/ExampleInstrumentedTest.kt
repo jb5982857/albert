@@ -1,9 +1,9 @@
 package com.albert.account
 
-import android.content.Intent
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.albert.account.ui.AccountActivity
+import com.albert.common.server.account.AccountCallback
+import com.albert.account.api.AccountServerImpl
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,8 +22,15 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.albert.account", appContext.packageName)
-        appContext.startActivity(Intent(appContext, AccountActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        AccountServerImpl().login(object : AccountCallback {
+            override fun onSuccess() {
+                println("onSuccess")
+            }
+
+            override fun onFailed() {
+
+            }
+
         })
     }
 }
