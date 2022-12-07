@@ -41,7 +41,6 @@ class ModuleConventionPlugin : Plugin<Project> {
             project.pluginManager.apply("com.android.library")
         }
         project.pluginManager.apply("org.jetbrains.kotlin.android")
-        project.pluginManager.apply("kotlin-kapt")
 
         val android = project.extensions.getByName("android")
         if (android is ApplicationExtension) {
@@ -50,24 +49,6 @@ class ModuleConventionPlugin : Plugin<Project> {
                 defaultConfig.versionCode = 1
                 defaultConfig.versionName = "1.0.0"
             }
-        }
-
-        setKapt(project)
-        setDependencies(project)
-    }
-
-    private fun setKapt(project: Project) {
-        project.extensions.configure<KaptExtension>("kapt") {
-            arguments {
-                arg("AROUTER_MODULE_NAME", project.name)
-            }
-        }
-    }
-
-    private fun setDependencies(project: Project) {
-        project.dependencies {
-            this.add("implementation", "com.alibaba:arouter-api:1.5.2")
-            this.add("kapt", "com.alibaba:arouter-compiler:1.5.2")
         }
     }
 

@@ -1,5 +1,6 @@
 plugins {
     id("module")
+    id("arouter")
 }
 
 android {

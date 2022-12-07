@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    id("arouter")
 }
 
 android {
@@ -15,12 +15,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    kapt {
-        arguments {
-            arg("AROUTER_MODULE_NAME", project.name)
-        }
     }
 
     buildTypes {
@@ -53,8 +47,6 @@ dependencies {
     implementation(depend.constraintlayout)
     implementation(depend.androidx.livedata.ktx)
     implementation(depend.androidx.viewmodel.ktx)
-    implementation(depend.arouter)
-    kapt(depend.arouter.compiler)
     implementation(project(":common"))
     implementation(project(":account"))
     testImplementation("junit:junit:4.13.2")

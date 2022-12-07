@@ -22,5 +22,10 @@ gradlePlugin {
             id = "module"
             implementationClass = "ModuleConventionPlugin"
         }
+
+        register("arouter") {
+            id = "arouter"
+            implementationClass = "ARouterConventionPlugin"
+        }
     }
 }
