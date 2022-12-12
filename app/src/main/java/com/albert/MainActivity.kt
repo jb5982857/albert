@@ -1,10 +1,14 @@
 package com.albert
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.albert.application.lifecycle.annotation.AApplicationLifecycle
+import com.albert.application.lifecycle.api.IAApplicationLifecycle
 import com.albert.ui.main.MainFragment
 
-class MainActivity : AppCompatActivity() {
+@AApplicationLifecycle
+class MainActivity : AppCompatActivity(), IAApplicationLifecycle {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -4,6 +4,7 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven(url = "file:///Users/jiangbo/Documents/android/albert/build-logic/repo")
     }
 }
 
@@ -14,6 +15,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven(url = "file:///Users/jiangbo/Documents/android/albert/build-logic/repo")
     }
 
     versionCatalogs {
@@ -33,3 +35,5 @@ include(":common-ui")
 include(":network")
 include(":data-store")
 include(":log")
+include(":application-lifecycle-api")
+project(":application-lifecycle-api").projectDir = File("./build-logic/application-lifecycle-api")

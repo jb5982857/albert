@@ -1,6 +1,6 @@
 plugins {
     id("module")
-    id("arouter")
+    id("aapplicationLifecycle")
 }
 
 android {
@@ -32,9 +32,6 @@ android {
     dataBinding {
         isEnabled = true
     }
-
-    //xml资源必须以 account_ 开头
-    resourcePrefix = "account_"
 }
 
 dependencies {

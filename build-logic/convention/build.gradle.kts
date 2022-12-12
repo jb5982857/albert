@@ -2,6 +2,8 @@ plugins {
     `kotlin-dsl`
 }
 
+plugins.apply("groovy")
+
 group = "com.albert.buildlogic"
 
 java {
@@ -10,9 +12,15 @@ java {
 }
 
 dependencies {
+    //gradle sdk
+    implementation(gradleApi())
+    //groovy sdk
+    implementation(localGroovy())
     implementation(depend.android.gradlePlugin)
     implementation(depend.kotlin.gradlePlugin)
     implementation(depend.spotless.gradlePlugin)
+    implementation("commons-io:commons-io:2.4")
+    implementation("commons-codec:commons-codec:1.11")
     implementation(files("libs/dom4j-2.0.3.jar"))
 }
 
@@ -27,5 +35,31 @@ gradlePlugin {
             id = "arouter"
             implementationClass = "ARouterConventionPlugin"
         }
+
+        register("resourcePrefix") {
+            id = "resourcePrefix"
+            implementationClass = "ResourcePrefixConventionPlugin"
+        }
+
+        register("common") {
+            id = "common"
+            implementationClass = "CommonConventionPlugin"
+        }
+
+        register("library") {
+            id = "library"
+            implementationClass = "LibraryConventionPlugin"
+        }
+
+        register("aapplicationAppModule") {
+            id = "aapplicationAppModule"
+            implementationClass = "AApplicationConventionTransform"
+        }
+
+        register("aapplicationLifecycle") {
+            id = "aapplicationLifecycle"
+            implementationClass = "AApplicationLifecycleConventionPlugin"
+        }
+
     }
 }

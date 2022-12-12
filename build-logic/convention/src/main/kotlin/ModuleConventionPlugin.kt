@@ -19,8 +19,6 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.tasks.ProcessApplicationManifest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
-import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 import utils.ManifestUtils
 
 class ModuleConventionPlugin : Plugin<Project> {
@@ -37,10 +35,13 @@ class ModuleConventionPlugin : Plugin<Project> {
     private fun configProject(project: Project, isModule: Boolean) {
         if (isModule) {
             project.pluginManager.apply("com.android.application")
+            project.pluginManager.apply("aapplicationAppModule")
         } else {
             project.pluginManager.apply("com.android.library")
         }
         project.pluginManager.apply("org.jetbrains.kotlin.android")
+        project.pluginManager.apply("arouter")
+        project.pluginManager.apply("resourcePrefix")
 
         val android = project.extensions.getByName("android")
         if (android is ApplicationExtension) {

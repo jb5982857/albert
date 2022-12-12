@@ -1,9 +1,19 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
 
     versionCatalogs {
@@ -14,3 +24,6 @@ dependencyResolutionManagement {
 }
 
 include(":convention")
+include(":application-lifecycle-compiler")
+include(":application-lifecycle-annotation")
+//include(":application-lifecycle-api")

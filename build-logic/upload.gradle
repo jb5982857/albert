@@ -1,0 +1,23 @@
+apply plugin: 'maven-publish'
+
+publishing {
+    // 定义发布什么
+    publications {
+        plugin(MavenPublication) {
+            from components.java //使用默认的配置生成jar包
+            groupId = 'com.albert'     //这三部分组成了：com.example:plugin:1.0.0-SNAPSHOT
+            artifactId = project.name
+            version = project.version
+        }
+    }
+    // 定义发布到哪
+    // publishPluginPublicationToRepoRepository 发布到 plugin/build/repo
+    // publishPluginPublicationToMavenLocal 发布到 ~/.m2/repository
+    repositories {
+        maven {
+            name = 'repo'
+            println("file:" + (new File("$projectDir.absolutePath/../repo/").absolutePath))
+            url = "file://$projectDir.absolutePath/../repo/"
+        }
+    }
+}

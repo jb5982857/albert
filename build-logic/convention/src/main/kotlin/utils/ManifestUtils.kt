@@ -15,7 +15,7 @@ object ManifestUtils {
     private const val NAME = "name"
     private const val VALUE = "value"
     private const val MODULE_IS_MAIN = "module_is_main"
-    private const val BASE_APPLICATION_PATH = "com.albert.base_components.BaseApplication"
+    private const val BASE_APPLICATION_PATH = "com.albert.common.compoents.BaseApplication"
 
     private const val LAUNCH_NODE_TEXT =
         "<intent-filter " +

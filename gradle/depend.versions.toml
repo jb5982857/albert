@@ -8,6 +8,8 @@ kotlin = "1.6.21"
 androidGradlePlugin = "7.2.1"
 spotless = "6.7.0"
 arouter = "1.5.2"
+autoService = "1.0-rc7"
+javapoet = "1.13.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
@@ -21,5 +23,7 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plugin-gradle", version.ref = "spotless" }
 arouter = { group = "com.alibaba", name = "arouter-api", version.ref = "arouter" }
 arouter-compiler = { group = "com.alibaba", name = "arouter-compiler", version.ref = "arouter" }
+google-auto-service = { group = "com.google.auto.service", name = "auto-service", version.ref = "autoService" }
+squareup-javapoet = { group = "com.squareup", name = "javapoet", version.ref = "javapoet" }
 
 [plugins]
