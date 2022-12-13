@@ -18,6 +18,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/acoount_title_bg" />
+            app:srcCompat="@drawable/account_title_bg" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

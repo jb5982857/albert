@@ -50,6 +50,10 @@ gradlePlugin {
             id = "library"
             implementationClass = "LibraryConventionPlugin"
         }
+        register("app") {
+            id = "app"
+            implementationClass = "AppConventionPlugin"
+        }
 
         register("aapplicationAppModule") {
             id = "aapplicationAppModule"
@@ -59,6 +63,16 @@ gradlePlugin {
         register("aapplicationLifecycle") {
             id = "aapplicationLifecycle"
             implementationClass = "AApplicationLifecycleConventionPlugin"
+        }
+
+        register("applicationConfig") {
+            id = "applicationConfig"
+            implementationClass = "appconfig.ApplicationConfigPlugin"
+        }
+
+        register("libraryConfig") {
+            id = "libraryConfig"
+            implementationClass = "appconfig.LibraryConfigPlugin"
         }
 
     }

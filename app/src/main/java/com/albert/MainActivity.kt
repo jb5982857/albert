@@ -1,8 +1,7 @@
 package com.albert
 
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.albert.application.lifecycle.annotation.AApplicationLifecycle
 import com.albert.application.lifecycle.api.IAApplicationLifecycle
 import com.albert.ui.main.MainFragment

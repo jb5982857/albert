@@ -1,16 +1,16 @@
+
 import asm.AApplicationWriter
-import com.android.build.gradle.BaseExtension
-import org.gradle.api.Plugin
-import org.gradle.api.Project
 import com.android.build.api.transform.*
 import com.android.build.api.transform.QualifiedContent.ContentType
 import com.android.build.api.transform.QualifiedContent.DefaultContentType
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.internal.pipeline.TransformManager
-import utils.eachFileRecurse
+import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
-import org.apache.commons.codec.digest.DigestUtils
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import utils.eachFileRecurse
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
@@ -24,6 +24,7 @@ class AApplicationConventionTransform : Transform(), Plugin<Project> {
 
     companion object {
         const val ALBERT_CLASS_PACKAGE = "com/albert/application/lifecycle/apt"
+        const val NEED_DEL_CLASS = "com/albert/application/lifecycle/apt/AApplicationApts.class"
     }
 
     override fun apply(project: Project) {
@@ -56,9 +57,11 @@ class AApplicationConventionTransform : Transform(), Plugin<Project> {
                 handleDirectoryInput(directoryInput, outputProvider)
             }
 
+            val startTime = System.currentTimeMillis()
             input.jarInputs.forEach { jarInput ->
                 handleJarInputs(jarInput, outputProvider)
             }
+            println("处理 jar 总费时间：${System.currentTimeMillis() - startTime}")
         }
         writerAApplicationToNewClass(outputProvider)
     }
@@ -126,14 +129,23 @@ class AApplicationConventionTransform : Transform(), Plugin<Project> {
                 val zipEntry = ZipEntry(entryName)
                 val inputStream = jarFile.getInputStream(jarEntry)
                 //插桩class
+                var needDel = false
                 if (checkClassFile(entryName)) {
-                    //class文件处理
-                    println("----------- deal with jar class file < $entryName > -----------")
-                    aptClassPackages.add(classPathTransformJavaClass(entryName))
+                    if (needDel(entryName)) {
+                        println("发现了$NEED_DEL_CLASS，在 $entryName")
+                        needDel = true
+                    } else {
+                        //class文件处理
+                        println("----------- deal with jar class file < $entryName > -----------")
+                        aptClassPackages.add(classPathTransformJavaClass(entryName))
+                    }
                 }
-                jarOutputStream.putNextEntry(zipEntry)
-                jarOutputStream.write(IOUtils.toByteArray(inputStream))
-                jarOutputStream.closeEntry()
+
+                if (!needDel) {
+                    jarOutputStream.putNextEntry(zipEntry)
+                    jarOutputStream.write(IOUtils.toByteArray(inputStream))
+                    jarOutputStream.closeEntry()
+                }
             }
             //结束
             jarOutputStream.close()
@@ -147,6 +159,11 @@ class AApplicationConventionTransform : Transform(), Plugin<Project> {
         }
     }
 
+
+    private fun needDel(name: String) =
+        (name.endsWith(".class") && !name.startsWith("R\$") && "R.class" != name && "BuildConfig.class" != name && name.contains(
+            NEED_DEL_CLASS
+        ))
 
     /**
      * 检查class文件是否需要处理

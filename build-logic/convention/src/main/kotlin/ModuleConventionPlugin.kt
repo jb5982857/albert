@@ -14,9 +14,10 @@
  *   limitations under the License.
  */
 
-import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.AppExtension
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.tasks.ProcessApplicationManifest
+import com.android.build.gradle.tasks.ProcessLibraryManifest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import utils.ManifestUtils
@@ -29,56 +30,61 @@ class ModuleConventionPlugin : Plugin<Project> {
 
         configProject(project, isModule)
         getAllVariantManifestTask(project, isModule)
-        addLaunchActivityForModule(project, isModule)
+        delLaunchActivityForModule(project, isModule)
     }
 
     private fun configProject(project: Project, isModule: Boolean) {
         if (isModule) {
-            project.pluginManager.apply("com.android.application")
+            project.pluginManager.apply("applicationConfig")
             project.pluginManager.apply("aapplicationAppModule")
         } else {
-            project.pluginManager.apply("com.android.library")
+            project.pluginManager.apply("libraryConfig")
         }
         project.pluginManager.apply("org.jetbrains.kotlin.android")
         project.pluginManager.apply("arouter")
         project.pluginManager.apply("resourcePrefix")
-
-        val android = project.extensions.getByName("android")
-        if (android is ApplicationExtension) {
-            android.defaultConfig.let { defaultConfig ->
-                defaultConfig.applicationId = "com.albert.${project.name}"
-                defaultConfig.versionCode = 1
-                defaultConfig.versionName = "1.0.0"
-            }
-        }
     }
 
     private fun getAllVariantManifestTask(
         project: Project, isModule: Boolean
     ) {
-        if (isModule) {
+        if (!isModule) {
+            project.extensions.findByType(BaseExtension::class.java)?.variantFilter {
+                variantNames.add(this.name)
+            }
+        } else {
             project.extensions.findByType(AppExtension::class.java)?.variantFilter {
                 variantNames.add(this.name)
             }
         }
     }
 
-    private fun addLaunchActivityForModule(project: Project, isModule: Boolean) {
-        if (!isModule) {
-            return
-        }
+    private fun delLaunchActivityForModule(project: Project, isModule: Boolean) {
 
         project.afterEvaluate {
             variantNames.forEach {
-                val applicationManifestTask: ProcessApplicationManifest = project.tasks.getByName(
-                    String.format(
-                        "process%sMainManifest", it.capitalize()
-                    )
-                ) as ProcessApplicationManifest
-                applicationManifestTask.doLast {
-                    val task = this as ProcessApplicationManifest
-                    val androidManifestPath = task.mergedManifest.get().toString()
-                    ManifestUtils.addLaunchActivityIfNeeded(androidManifestPath)
+                if (isModule) {
+                    val manifestTask: ProcessApplicationManifest = project.tasks.getByName(
+                        String.format(
+                            "process%sMainManifest", it.capitalize()
+                        )
+                    ) as ProcessApplicationManifest
+                    manifestTask.doLast {
+                        val task = this as ProcessApplicationManifest
+                        val androidManifestPath = task.mergedManifest.get().toString()
+                        ManifestUtils.addApplicationIfNeeded(androidManifestPath)
+                    }
+                } else {
+                    val manifestTask: ProcessLibraryManifest = project.tasks.getByName(
+                        String.format(
+                            "process%sManifest", it.capitalize()
+                        )
+                    ) as ProcessLibraryManifest
+                    manifestTask.doLast {
+                        val task = this as ProcessLibraryManifest
+                        val androidManifestPath = task.manifestOutputFile.get().asFile.absolutePath
+                        ManifestUtils.delLaunchActivityIfNeeded(androidManifestPath)
+                    }
                 }
             }
         }

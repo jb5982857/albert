@@ -12,10 +12,13 @@ object ManifestUtils {
     private const val APPLICATION = "application"
     private const val ACTIVITY = "activity"
     private const val META_DATA = "meta-data"
+    private const val INTENT_FILTER = "intent-filter"
     private const val NAME = "name"
     private const val VALUE = "value"
     private const val MODULE_IS_MAIN = "module_is_main"
     private const val BASE_APPLICATION_PATH = "com.albert.common.compoents.BaseApplication"
+    private const val LAUNCHER = "android.intent.category.LAUNCHER"
+    private const val CATEGORY = "category"
 
     private const val LAUNCH_NODE_TEXT =
         "<intent-filter " +
@@ -25,7 +28,23 @@ object ManifestUtils {
                 "<category android:name=\"android.intent.category.LAUNCHER\" />" +
                 "</intent-filter>\n"
 
-    fun addLaunchActivityIfNeeded(manifestPath: String): Boolean {
+    fun addApplicationIfNeeded(manifestPath: String): Boolean {
+        val rootDoc = SAXReader().read(File(manifestPath))
+        val applicationNode =
+            (rootDoc.content()[0] as Element).content().find { it.name == APPLICATION }
+                ?: return false
+
+        (applicationNode as Element).apply {
+            val applicationNameAttr = this.attribute(NAME)
+            if (applicationNameAttr == null) {
+                this.addAttribute("android:$NAME", BASE_APPLICATION_PATH)
+            }
+        }
+        update(rootDoc)
+        return true
+    }
+
+    fun delLaunchActivityIfNeeded(manifestPath: String): Boolean {
         try {
             val rootDoc = SAXReader().read(File(manifestPath))
             val applicationNode =
@@ -43,17 +62,22 @@ object ManifestUtils {
                         ?: return false
 
                 activityNodes.forEach { activityNode ->
-                    val metaData =
-                        (activityNode as Element).content()?.filter { it.name == META_DATA }
-                    metaData?.forEach {
-                        val attrs = (it as Element).attributes()
-                        val nameAttr = attrs.find { it.name == NAME && it.value == MODULE_IS_MAIN }
-                        if (nameAttr != null) {
-                            //找到了这个meta-data
-                            val valueAttr = attrs.find { it.name == VALUE } ?: return@forEach
-                            val value = valueAttr.value
-                            if (value == "true") {
-                                addLaunchNode(activityNode)
+                    val intentFilter =
+                        (activityNode as Element).content()?.filter { it.name == INTENT_FILTER }
+                    intentFilter?.forEach { intentNode ->
+                        val intentContent = (intentNode as Element).content() ?: return@forEach
+                        intentContent.forEach {
+                            if (it is Element) {
+                                val attrs = it.attributes()
+                                if (it.name == CATEGORY) {
+                                    val nameAttr =
+                                        attrs.find { it.name == NAME && it.value == LAUNCHER }
+                                    if (nameAttr != null) {
+                                        //找到了主activity
+                                        //删除 LAUNCHER
+                                        intentNode.remove(it)
+                                    }
+                                }
                             }
                         }
 
@@ -88,7 +112,7 @@ object ManifestUtils {
     }
 
 
-    private fun addLaunchNode(activityNode: Element): Boolean {
+    private fun addNode(activityNode: Element): Boolean {
         val manifestNodeReader = SAXReader()
         try {
             val launchEle =

@@ -4,12 +4,8 @@ plugins {
 
 android {
     namespace = "com.albert.app_utils"
-    compileSdk = 32
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 32
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
